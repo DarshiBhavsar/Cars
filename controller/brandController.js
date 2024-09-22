@@ -1,7 +1,8 @@
+const { default: BASE_URL } = require('../config/config');
 const Brand = require('../models/brandModel');
 const SERVER_IP = '192.168.31.82';
 const PORT = 5000;
-
+const BASE_URL = 'https://cars-8jq0.onrender.com';
 exports.createBrand = async (req, res) => {
     try {
         const { name, description, status } = req.body;
@@ -15,7 +16,8 @@ exports.createBrand = async (req, res) => {
         const newBrand = new Brand({ name, description, image, status });
         await newBrand.save();
         if (newBrand.image) {
-            newBrand.image = `http://${SERVER_IP}:${PORT}/uploads/${newBrand.image}`;
+            // newBrand.image = `http://${SERVER_IP}:${PORT}/uploads/${newBrand.image}`;
+            newBrand.image = `${BASE_URL}/uploads/${newBrand.image}`;
         }
         console.log('New Brand Created:', newBrand);
         res.status(201).json({ message: 'Brand created successfully', brand: newBrand });
@@ -42,7 +44,8 @@ exports.getAllBrands = async (req, res) => {
         const brandsWithFullImagePath = brands.map(brand => {
             if (brand.image) {
                 // Construct the full image path using your SERVER_IP and PORT
-                brand.image = `http://${SERVER_IP}:${PORT}/uploads/${brand.image}`;
+                // brand.image = `http://${SERVER_IP}:${PORT}/uploads/${brand.image}`;
+                brand.image = `${BASE_URL}/uploads/${brand.image}`;
             }
             return brand;
         });
@@ -73,7 +76,8 @@ exports.getBrandById = async (req, res) => {
         }
         if (brand.image) {
             // Construct the full image path using your SERVER_IP and port
-            brand.image = `http://${SERVER_IP}:${PORT}/uploads/${brand.image}`;
+            // brand.image = `http://${SERVER_IP}:${PORT}/uploads/${brand.image}`;
+            brand.image = `${BASE_URL}/uploads/${brand.image}`;
         }
         // Send the response with the modified brand data
         res.status(200).json(brand);

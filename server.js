@@ -5,8 +5,9 @@ const authRoutes = require("./routes/authRoutes");
 require("dotenv").config();
 const app = express();
 connectDB();
+const SERVER_IP = 'localhost';
 app.use(cors({
-    origin: ['http://localhost:3000'],
+    origin: ['https://chic-pothos-cecbac.netlify.app'],
     // origin: ['http://localhost:3000'],
     methods: ['POST', 'GET', 'PUT', 'DELETE'],
     credentials: true
@@ -24,5 +25,6 @@ app.use("/uploads", express.static("uploads"));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    // console.log(`Server running on port ${PORT}`);
+    console.log(`Server is running on http://${SERVER_IP}:${PORT}`);
 });

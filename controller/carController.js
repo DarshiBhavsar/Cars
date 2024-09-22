@@ -5,8 +5,9 @@ const Attribute = require('../models/attributeModel');
 const path = require('path');
 const fs = require('fs');
 const Category = require('../models/categoryModel');
-const SERVER_IP = '192.168.31.82';
+const SERVER_IP = 'localhost';
 const PORT = 5000;
+const BASE_URL = 'https://cars-8jq0.onrender.com';
 const generateCssId = () => {
     const randomDigits = Math.floor(1000 + Math.random() * 9000).toString(); // Generates a 4-digit number
     return `CSS${randomDigits}`; // Concatenates the prefix "CSS" with the 4-digit number
@@ -58,9 +59,11 @@ exports.getAllCars = async (req, res) => {
         const cars = await Car.find(filter).populate('brand_id').populate('category_id');
         const carsWithFullImagePath = cars.map(car => {
             if (Array.isArray(car.image)) {
-                car.image = car.image.map(img => `http://${SERVER_IP}:${PORT}/uploads/${img}`);
+                // car.image = car.image.map(img => `http://${SERVER_IP}:${PORT}/uploads/${img}`);
+                car.image = car.image.map(img => `${BASE_URL}/uploads/${img}`);
             } else if (car.image) {
-                car.image = [`http://${SERVER_IP}:${PORT}/uploads/${car.image}`];
+                // car.image = [`http://${SERVER_IP}:${PORT}/uploads/${car.image}`];
+                car.image = [`${BASE_URL}/uploads/${car.image}`];
             }
             return car;
         });
@@ -78,9 +81,11 @@ exports.getCarById = async (req, res) => {
         if (car) {
             // Construct image URLs if the image field is an array
             if (Array.isArray(car.image)) {
-                car.image = car.image.map(img => `http://${SERVER_IP}:${PORT}/uploads/${img}`);
+                // car.image = car.image.map(img => `http://${SERVER_IP}:${PORT}/uploads/${img}`);
+                car.image = car.image.map(img => `${BASE_URL}/uploads/${img}`);
             } else if (car.image) {
-                car.image = [`http://${SERVER_IP}:${PORT}/uploads/${car.image}`];
+                // car.image = [`http://${SERVER_IP}:${PORT}/uploads/${car.image}`];
+                car.image = [`${BASE_URL}/uploads/${car.image}`];
             }
 
             // res.json(car);
@@ -189,9 +194,11 @@ exports.getCarsByCategoryId = async (req, res) => {
             .populate('category_id');
         const carsWithFullImagePath = cars.map(car => {
             if (Array.isArray(car.image)) {
-                car.image = car.image.map(img => `http://${SERVER_IP}:${PORT}/uploads/${img}`);
+                // car.image = car.image.map(img => `http://${SERVER_IP}:${PORT}/uploads/${img}`);
+                car.image = car.image.map(img => `${BASE_URL}/uploads/${img}`);
             } else if (car.image) {
-                car.image = [`http://${SERVER_IP}:${PORT}/uploads/${car.image}`];
+                // car.image = [`http://${SERVER_IP}:${PORT}/uploads/${car.image}`];
+                car.image = [`${BASE_URL}/uploads/${car.image}`];
             }
             return car;
         });
@@ -215,9 +222,11 @@ exports.getCarsByBrandId = async (req, res) => {
             .populate('category_id');
         const carsWithFullImagePath = cars.map(car => {
             if (Array.isArray(car.image)) {
-                car.image = car.image.map(img => `http://${SERVER_IP}:${PORT}/uploads/${img}`);
+                // car.image = car.image.map(img => `http://${SERVER_IP}:${PORT}/uploads/${img}`);
+                car.image = car.image.map(img => `${BASE_URL}/uploads/${img}`);
             } else if (car.image) {
-                car.image = [`http://${SERVER_IP}:${PORT}/uploads/${car.image}`];
+                // car.image = [`http://${SERVER_IP}:${PORT}/uploads/${car.image}`];
+                car.image = [`${BASE_URL}/uploads/${car.image}`];
             }
             return car;
         });
@@ -254,9 +263,11 @@ exports.getCarsDetailsById = async (req, res) => {
 
 
         if (Array.isArray(car.image)) {
-            car.image = car.image.map(img => `http://${SERVER_IP}:${PORT}/uploads/${img}`);
+            // car.image = car.image.map(img => `http://${SERVER_IP}:${PORT}/uploads/${img}`);
+            car.image = car.image.map(img => `${BASE_URL}/uploads/${img}`);
         } else if (car.image) {
-            car.image = [`http://${SERVER_IP}:${PORT}/uploads/${car.image}`];
+            // car.image = [`http://${SERVER_IP}:${PORT}/uploads/${car.image}`];
+            car.image = [`${BASE_URL}/uploads/${car.image}`];
         }
 
         const variants = await Variant.find({ car_id: _id, status: 'Active' })
