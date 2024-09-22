@@ -1,4 +1,3 @@
-const { default: BASE_URL } = require('../config/config');
 const Brand = require('../models/brandModel');
 const SERVER_IP = '192.168.31.82';
 const PORT = 5000;
