@@ -27,10 +27,10 @@ import {
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
-import BASE_URL from '../../config/config';
 import { useSelector } from 'react-redux';
 import '../brands/brand.css'
 import '../cars/car.css'
+import BASE_URL from '../../config/config';
 
 const CarPage = () => {
     const token = useSelector((state) => state.user.token);
