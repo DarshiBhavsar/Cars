@@ -1,0 +1,153 @@
+.image-preview-container {
+    position: relative;
+    /* display: inline-block; */
+}
+
+.image-preview-wrapper {
+    position: relative;
+    width: 100px;
+    /* Set width as needed */
+    height: 100px;
+    /* Set height as needed */
+    border-radius: 50%;
+    overflow: visible;
+    background-color: #f0f0f0;
+    /* Placeholder background color */
+}
+
+.image-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.image-edit-icon {
+    position: absolute;
+    bottom: -7px;
+    z-index: 20;
+    /* Adjusts the vertical positioning */
+    right: 40px;
+    /* Adjusts the horizontal positioning */
+    background-color: white;
+    border: 1.5px solid black;
+    color: black;
+    border-radius: 50%;
+    padding: 3px;
+    font-size: small;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-modal .modal-dialog {
+    max-width: 500px;
+    /* Adjust size as needed */
+}
+
+.custom-modal .modal-content {
+    background-color: white;
+    /* White with some transparency */
+    border: none;
+    /* Remove border */
+    border-radius: 8px;
+    /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Add box-shadow */
+}
+
+.custom-modal .modal-header {
+    border-bottom: block;
+    color: black;
+    /* Remove border */
+}
+
+
+
+.custom-modal .modal-footer {
+    border-top: none;
+    /* Remove border */
+    justify-content: end;
+    /* Center buttons */
+}
+
+.custom-modal .modal-body {
+    font-weight: bold;
+    font-size: larger;
+    padding: 0;
+    /* Center buttons */
+}
+
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    /* Full width of the table */
+    margin-top: 20px;
+}
+
+.table-description {
+    white-space: nowrap;
+    /* Prevents text from wrapping to a new line */
+    overflow: hidden;
+    /* Hides the overflow content */
+    text-overflow: ellipsis;
+    /* Adds '...' at the end if the text is too long */
+    max-width: 200px;
+    /* You can adjust the width as needed */
+}
+
+.delete {
+    background-color: red;
+    color: #fff;
+    padding: 8px 20px;
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 500;
+}
+
+.delete:hover {
+    background-color: red;
+    color: white;
+}
+
+.Yes {
+    background-color: #dc3545;
+    color: #fff;
+    padding: 8px 20px;
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 500;
+}
+
+.Yes:hover {
+    background-color: red;
+    color: white;
+}
+
+.update {
+    background-color: green;
+    color: #fff;
+    padding: 8px 20px;
+    font-size: 13px;
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 500;
+}
+
+.update:hover {
+    background-color: green;
+    color: white;
+}
+
+.No {
+    background-color: #6c757d;
+    color: #fff;
+    padding: 8px 20px;
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 500;
+}
+
+.No:hover {
+    background-color: #6c757d;
+    color: white;
+}

@@ -1,0 +1,91 @@
+.icon {
+    margin-left: 3px;
+    font-size: 1.25rem;
+}
+
+.custom-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: none;
+    color: #21618C;
+    border: 2px solid #21618C;
+    padding: 10px 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    width: 180px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.custom-button:hover {
+    background-color: #21618C;
+    color: white;
+    transform: scale(1.05);
+    /* Darker color on hover */
+}
+
+.custom-button .icon {
+    font-size: 24px;
+    /* Adjust the size as needed */
+}
+
+.car-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.car-card:hover {
+    transform: translateY(-10px);
+    /* Move the card slightly upwards */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    /* Add shadow for hover effect */
+}
+
+.card-body1 {
+    display: flex;
+    background-color: #F8F9F9;
+    overflow: hidden;
+    /* justify-content: center; */
+    /* align-items: center; */
+    flex-direction: column;
+}
+
+.car-image1 {
+    height: 230px;
+    /* max-width: 100%; */
+    object-fit: contain;
+    border-radius: 0px;
+}
+
+.car {
+    font-family: "Ubuntu", sans-serif;
+}
+
+.slick-dots {
+    position: absolute;
+    bottom: 10px;
+    /* Adjust as needed */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    /* Ensure the dots are layered over the image */
+}
+
+/* Default dot color (non-active) */
+.slick-dots li button:before {
+    color: black;
+    /* Change this to black for default dots */
+    opacity: 1;
+    /* Make sure the dots are fully opaque */
+}
+
+/* Active dot color */
+.slick-dots li.slick-active button:before {
+    color: blue;
+    /* Change this to the color you want for the active dot */
+}
