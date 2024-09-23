@@ -7,7 +7,7 @@ const app = express();
 connectDB();
 const SERVER_IP = 'localhost';
 app.use(cors({
-    origin: ['https://cars-auto.netlify.app/login'],
+    origin: ['https://cars-auto.netlify.app'],
     // origin: ['http://localhost:3000'],
     methods: ['POST', 'GET', 'PUT', 'DELETE'],
     credentials: true
