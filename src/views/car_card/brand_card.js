@@ -13,22 +13,19 @@ const BrandCard = () => {
     // Fetch brands from the API
     useEffect(() => {
         const token = window.localStorage.getItem('token');
-        if (token) {
-            axios.get(`${BASE_URL}/api/brands`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
+        axios.get(`${BASE_URL}/api/brands`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        })
+            .then(result => {
+                // Filter brands on the frontend to exclude 'inactive' and 'draft' statuses
+                const filteredBrands = result.data.filter(brand => brand.status === 'Active');
+                setBrand(filteredBrands);
             })
-                .then(result => {
-                    // Filter brands on the frontend to exclude 'inactive' and 'draft' statuses
-                    const filteredBrands = result.data.filter(brand => brand.status === 'Active');
-                    setBrand(filteredBrands);
-                })
-                .catch(err => console.log(err));
-        } else {
-            console.log('No token found');
-        }
-    }, []);
+            .catch(err => console.log(err));
+    }
+        , []);
 
     return (
         <div className="brandcontent">
