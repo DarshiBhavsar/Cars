@@ -12,8 +12,8 @@ const BrandCard = () => {
 
     // Fetch brands from the API
     useEffect(() => {
+        const token = window.localStorage.getItem('token');
         if (token) {
-            const token = window.localStorage.getItem('token');
             axios.get(`${BASE_URL}/api/brands`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
