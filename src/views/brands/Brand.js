@@ -52,7 +52,7 @@ const BrandPage = () => {
 
     // Fetch brands on component mount
     useEffect(() => {
-        console.log('Token:', token);
+        const token = window.localStorage.getItem('token');
         if (token) { // Ensure the token is available
             axios.get(`${BASE_URL}/api/brands`, {
                 headers: {
