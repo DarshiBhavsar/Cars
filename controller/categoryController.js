@@ -1,7 +1,7 @@
 const Category = require('../models/categoryModel'); // Adjust the path as needed
 const SERVER_IP = '192.168.31.82';
 const PORT = 5000;
-const BASE_URL = 'https://cars-8jq0.onrender.com';
+const BASE_URL = 'https://cars-szio.onrender.com';
 // Create a new category
 exports.createCategory = async (req, res) => {
     try {

@@ -1,7 +1,7 @@
 const Brand = require('../models/brandModel');
 const SERVER_IP = '192.168.31.82';
 const PORT = 5000;
-const BASE_URL = 'https://cars-8jq0.onrender.com';
+const BASE_URL = 'https://cars-szio.onrender.com';
 exports.createBrand = async (req, res) => {
     try {
         const { name, description, status } = req.body;

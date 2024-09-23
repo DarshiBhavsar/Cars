@@ -7,7 +7,7 @@ const fs = require('fs');
 const Category = require('../models/categoryModel');
 const SERVER_IP = 'localhost';
 const PORT = 5000;
-const BASE_URL = 'https://cars-8jq0.onrender.com';
+const BASE_URL = 'https://cars-szio.onrender.com';
 const generateCssId = () => {
     const randomDigits = Math.floor(1000 + Math.random() * 9000).toString(); // Generates a 4-digit number
     return `CSS${randomDigits}`; // Concatenates the prefix "CSS" with the 4-digit number
