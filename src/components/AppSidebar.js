@@ -45,7 +45,7 @@ const AppSidebar = () => {
       <CSidebarHeader className="border-bottom">
         <CSidebarBrand to="/">
           {/* <CIcon customClassName="sidebar-brand-full" icon={logo} height={32} /> */}
-          <CImage src={'./public/carlogo.png'} alt="Car Logo" style={{ objectFit: 'cover', borderRadius: '10px' }} height={140} width={210} />
+          <CImage src={'/carlogo.png'} alt="Car Logo" style={{ objectFit: 'cover', borderRadius: '10px' }} height={140} width={210} />
 
           <CIcon customClassName="sidebar-brand-narrow" icon={sygnet} height={32} />
         </CSidebarBrand>
