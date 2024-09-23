@@ -28,7 +28,7 @@ const BrandCard = () => {
         } else {
             console.log('No token found');
         }
-    }, [token]);
+    }, []);
 
     return (
         <div className="brandcontent">
