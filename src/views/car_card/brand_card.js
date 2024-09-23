@@ -8,12 +8,12 @@ import { useNavigate } from 'react-router-dom';
 
 const BrandCard = () => {
     const navigate = useNavigate();
-    const token = useSelector((state) => state.user.token);
     const [brand, setBrand] = useState([]);
 
     // Fetch brands from the API
     useEffect(() => {
         if (token) {
+            const token = window.localStorage.getItem('token');
             axios.get(`${BASE_URL}/api/brands`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
