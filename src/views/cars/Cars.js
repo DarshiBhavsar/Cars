@@ -23,6 +23,7 @@ import {
     CModalBody,
     CModalHeader,
     CModalFooter,
+    CSpinner,
 } from '@coreui/react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -36,6 +37,7 @@ const CarPage = () => {
     const token = useSelector((state) => state.user.token);
     const navigate = useNavigate();
     const [cars, setCar] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [show, setShow] = useState(false);  // Modal state
     const [selectedUser, setSelectedUser] = useState(null);  // Selected brand
 
@@ -58,6 +60,7 @@ const CarPage = () => {
 
     // Fetch brands on component mount
     useEffect(() => {
+        setIsLoading(true);
         axios.get(`${BASE_URL}/api/cars`, {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -67,6 +70,7 @@ const CarPage = () => {
                 // Filter cars and only include those where both the car and the brand are active
                 const filteredCar = result.data.filter(car => car.brand_id.status === 'Active' && car.category_id.status === 'Active');
                 setCar(filteredCar);
+                setIsLoading(false)
             })
             .catch(err => console.log(err));
     }, []);
@@ -213,54 +217,61 @@ const CarPage = () => {
                     )}
                 </CTableBody>
             </CTable> */}
-            <CRow className="mt-4" >
-                {cars.length > 0 ? (
-                    cars.map((item, index) => (
-                        <CCol xs="12" sm="6" md="4" lg="3" key={index} className="mb-4">
-                            <CCard className="p-0 cars-card">
-                                <div style={{ display: item.image && item.image.length > 0 ? 'block' : 'none' }}>
-                                    <Slider {...settings} style={{ height: '230px', borderRadius: '0px' }}>
-                                        {item.image.map((img, index) => (
-                                            <img
-                                                key={index}
-                                                src={img}
-                                                alt={`Image ${index}`}
-                                                className='car-image'
-                                            />
-                                        ))}
-                                    </Slider>
-                                </div>
-                                <CCardBody style={{ backgroundColor: '#FAFAFB' }}>
-                                    <CCardText className='mb-3'><strong>Name: </strong>{item.name}</CCardText>
-                                    <CCardText>
-                                        <strong>Description: </strong>
-                                        {item.description}
-                                    </CCardText>
-                                    <CCardText>
-                                        <strong>Status: </strong>{item.status}
-                                    </CCardText>
-                                    <CCardText>
-                                        <strong>Brand: </strong>{item.brand_id.name}
-                                    </CCardText>
-                                    <CCardText>
-                                        <strong>Category: </strong>{item.category_id.name}
-                                    </CCardText>
-                                    <CButton className='update' size="sm" onClick={() => navigate(`/update_car`, { state: { id: item._id } })}>
-                                        Update
-                                    </CButton>
-                                    <CButton size="sm" className="delete mx-2" onClick={() => handleShow(item)}>
-                                        Delete
-                                    </CButton>
-                                </CCardBody>
-                            </CCard>
+            {isLoading ? ( // Show spinner if isLoading is true
+                <div className="text-center mt-4">
+                    <CSpinner color="primary" />
+                </div>
+            ) : (
+                <CRow className="mt-4" >
+                    {cars.length > 0 ? (
+                        cars.map((item, index) => (
+                            <CCol xs="12" sm="6" md="4" lg="3" key={index} className="mb-4">
+                                <CCard className="p-0 cars-card">
+                                    <div style={{ display: item.image && item.image.length > 0 ? 'block' : 'none' }}>
+                                        <Slider {...settings} style={{ height: '230px', borderRadius: '0px' }}>
+                                            {item.image.map((img, index) => (
+                                                <img
+                                                    key={index}
+                                                    src={img}
+                                                    alt={`Image ${index}`}
+                                                    className='car-image'
+                                                />
+                                            ))}
+                                        </Slider>
+                                    </div>
+                                    <CCardBody style={{ backgroundColor: '#FAFAFB' }}>
+                                        <CCardText className='mb-3'><strong>Name: </strong>{item.name}</CCardText>
+                                        <CCardText>
+                                            <strong>Description: </strong>
+                                            {item.description}
+                                        </CCardText>
+                                        <CCardText>
+                                            <strong>Status: </strong>{item.status}
+                                        </CCardText>
+                                        <CCardText>
+                                            <strong>Brand: </strong>{item.brand_id.name}
+                                        </CCardText>
+                                        <CCardText>
+                                            <strong>Category: </strong>{item.category_id.name}
+                                        </CCardText>
+                                        <CButton className='update' size="sm" onClick={() => navigate(`/update_car`, { state: { id: item._id } })}>
+                                            Edit
+                                        </CButton>
+                                        <CButton size="sm" className="delete mx-2" onClick={() => handleShow(item)}>
+                                            Delete
+                                        </CButton>
+                                    </CCardBody>
+                                </CCard>
+                            </CCol>
+                        ))
+                    ) : (
+                        <CCol>
+                            <p>No Cars Found</p>
                         </CCol>
-                    ))
-                ) : (
-                    <CCol>
-                        <p>No Cars Found</p>
-                    </CCol>
-                )}
-            </CRow>
+                    )}
+                </CRow>
+            )}
+
             {/* <CRow className="mt-4">
                 {cars.length > 0 ? (
                     cars.map((item, index) => (

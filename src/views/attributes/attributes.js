@@ -12,6 +12,7 @@ import {
     CModalBody,
     CModalHeader,
     CModalFooter,
+    CSpinner,
 } from '@coreui/react';
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
@@ -24,6 +25,7 @@ const AttributePage = () => {
     const token = useSelector((state) => state.user.token);
     const navigate = useNavigate()
     const [attribute, setAttribute] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [show, setShow] = useState(false);  // Modal state
     const [selectedUser, setSelectedUser] = useState(null);  // Selected brand
     const handleClose = () => setShow(false);
@@ -50,12 +52,13 @@ const AttributePage = () => {
 
     // Fetch brands on component mount
     useEffect(() => {
+        setIsLoading(true);
         axios.get(`${BASE_URL}/api/attributes`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             },
         })
-            .then(result => setAttribute(result.data))
+            .then(result => { setAttribute(result.data); setIsLoading(false) })
             .catch(err => console.log(err));
     }, []);
 
@@ -91,52 +94,61 @@ const AttributePage = () => {
             >
                 Add Attribute
             </CButton>
-            <CTable hover responsive className="mt-4" bordered>
-                <colgroup>
-                    <col style={{ width: '20%' }} />
-                    <col style={{ width: '20%' }} />
-                    <col style={{ width: '20%' }} />
-                    <col style={{ width: '20%' }} />
-                    <col style={{ width: '20%' }} />
-                </colgroup>
-                <CTableHead color="white">
-                    <CTableRow>
-                        <CTableHeaderCell scope="col">Attribute_type</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Attribute_value</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Variant</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Status</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Actions</CTableHeaderCell>
-                    </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                    {currentPost.length > 0 ? (
-                        currentPost.map((item, index) => (
-                            <CTableRow key={index}>
-                                <CTableDataCell>{item.attribute_type}</CTableDataCell>
-                                <CTableDataCell>{item.attribute_value}</CTableDataCell>
-                                <CTableDataCell>{item.variant_id.name}</CTableDataCell>
-                                <CTableDataCell>{item.status}</CTableDataCell>
-                                <CTableDataCell>
-                                    <CButton className='update' size="sm" onClick={() => navigate(`/update_attribute`, { state: { id: item._id } })}>
-                                        Edit
-                                    </CButton>
-                                    <CButton className='delete mx-2' size="sm" onClick={() => handleShow(item)}>
-                                        Delete
-                                    </CButton>
-                                </CTableDataCell>
+            {isLoading ? ( // Show spinner if isLoading is true
+                <div className="text-center mt-4">
+                    <CSpinner color="primary" />
+                </div>
+            ) : (
+                <div>
+                    <CTable hover responsive className="mt-4" bordered>
+                        <colgroup>
+                            <col style={{ width: '20%' }} />
+                            <col style={{ width: '20%' }} />
+                            <col style={{ width: '20%' }} />
+                            <col style={{ width: '20%' }} />
+                            <col style={{ width: '20%' }} />
+                        </colgroup>
+                        <CTableHead color="white">
+                            <CTableRow>
+                                <CTableHeaderCell scope="col">Attribute_type</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Attribute_value</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Variant</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Status</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Actions</CTableHeaderCell>
                             </CTableRow>
-                        ))
-                    ) : (
-                        <CTableRow>
-                            <CTableDataCell colSpan="5" className="text-center">
-                                No Attributes Found
-                            </CTableDataCell>
-                        </CTableRow>
-                    )}
-                </CTableBody>
+                        </CTableHead>
+                        <CTableBody>
+                            {currentPost.length > 0 ? (
+                                currentPost.map((item, index) => (
+                                    <CTableRow key={index}>
+                                        <CTableDataCell>{item.attribute_type}</CTableDataCell>
+                                        <CTableDataCell>{item.attribute_value}</CTableDataCell>
+                                        <CTableDataCell>{item.variant_id.name}</CTableDataCell>
+                                        <CTableDataCell>{item.status}</CTableDataCell>
+                                        <CTableDataCell>
+                                            <CButton className='update' size="sm" onClick={() => navigate(`/update_attribute`, { state: { id: item._id } })}>
+                                                Edit
+                                            </CButton>
+                                            <CButton className='delete mx-2' size="sm" onClick={() => handleShow(item)}>
+                                                Delete
+                                            </CButton>
+                                        </CTableDataCell>
+                                    </CTableRow>
+                                ))
+                            ) : (
+                                <CTableRow>
+                                    <CTableDataCell colSpan="5" className="text-center">
+                                        No Attributes Found
+                                    </CTableDataCell>
+                                </CTableRow>
+                            )}
+                        </CTableBody>
+                    </CTable>
+                    < Pagination totalPost={attribute.length} postPerPage={postPerPage} setCurrentPage={setCurrentPage} />
+                </div>
+            )}
 
-            </CTable>
-            <Pagination totalPost={attribute.length} postPerPage={postPerPage} setCurrentPage={setCurrentPage} />
+
             <CModal visible={show} onClose={handleClose} centered className="custom-modal">
                 <CModalHeader closeButton>
                     <CModalBody>
@@ -152,7 +164,7 @@ const AttributePage = () => {
                     </CButton>
                 </CModalFooter>
             </CModal>
-        </div>
+        </div >
     )
 }
 

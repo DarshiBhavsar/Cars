@@ -12,6 +12,7 @@ import {
     CModalBody,
     CModalHeader,
     CModalFooter,
+    CSpinner,
 } from '@coreui/react';
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
@@ -25,6 +26,7 @@ const VehiclePage = () => {
     const navigate = useNavigate()
     const [vehicle, setVehicle] = useState([]);
     const [show, setShow] = useState(false);  // Modal state
+    const [isLoading, setIsLoading] = useState(true);
     const [selectedUser, setSelectedUser] = useState(null);  // Selected brand
     const handleClose = () => setShow(false);
     const handleShow = (item) => {
@@ -50,12 +52,13 @@ const VehiclePage = () => {
     const currentPost = vehicle.slice(firstPostIndex, lastPostIndex);
     // Fetch brands on component mount
     useEffect(() => {
+        setIsLoading(true);
         axios.get(`${BASE_URL}/api/vehicles`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             },
         })
-            .then(result => setVehicle(result.data))
+            .then(result => { setVehicle(result.data); setIsLoading(false) })
             .catch(err => console.log(err));
     }, []);
 
@@ -91,51 +94,61 @@ const VehiclePage = () => {
             >
                 Add Vehicle
             </CButton>
-            <CTable hover responsive className="mt-4" bordered>
-                <colgroup>
-                    <col style={{ width: '20%' }} /> {/* Image Column */}
-                    <col style={{ width: '20%' }} /> {/* Name Column */}
-                    <col style={{ width: '20%' }} /> {/* Description Column */}
-                    <col style={{ width: '20%' }} /> {/* Status Column */}
-                    <col style={{ width: '20%' }} /> {/* Actions Column */}
-                </colgroup>
-                <CTableHead color="white">
-                    <CTableRow>
-                        <CTableHeaderCell scope="col">Name</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Price</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Variant</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Status</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Actions</CTableHeaderCell>
-                    </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                    {currentPost.length > 0 ? (
-                        currentPost.map((item, index) => (
-                            <CTableRow key={index}>
-                                <CTableDataCell>{item.name}</CTableDataCell>
-                                <CTableDataCell>{item.price}</CTableDataCell>
-                                <CTableDataCell>{item.variant_id.name}</CTableDataCell>
-                                <CTableDataCell>{item.status}</CTableDataCell>
-                                <CTableDataCell>
-                                    <CButton className='update' size="sm" onClick={() => navigate(`/update_vehicle`, { state: { id: item._id } })}>
-                                        Edit
-                                    </CButton>
-                                    <CButton className='delete mx-2' size="sm" onClick={() => handleShow(item)}>
-                                        Delete
-                                    </CButton>
-                                </CTableDataCell>
+            {isLoading ? ( // Show spinner if isLoading is true
+                <div className="text-center mt-4">
+                    <CSpinner color="primary" />
+                </div>
+            ) : (
+                <div>
+                    <CTable hover responsive className="mt-4" bordered>
+                        <colgroup>
+                            <col style={{ width: '20%' }} /> {/* Image Column */}
+                            <col style={{ width: '20%' }} /> {/* Name Column */}
+                            <col style={{ width: '20%' }} /> {/* Description Column */}
+                            <col style={{ width: '20%' }} /> {/* Status Column */}
+                            <col style={{ width: '20%' }} /> {/* Actions Column */}
+                        </colgroup>
+                        <CTableHead color="white">
+                            <CTableRow>
+                                <CTableHeaderCell scope="col">Name</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Price</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Variant</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Status</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Actions</CTableHeaderCell>
                             </CTableRow>
-                        ))
-                    ) : (
-                        <CTableRow>
-                            <CTableDataCell colSpan="5" className="text-center">
-                                No Categories Found
-                            </CTableDataCell>
-                        </CTableRow>
-                    )}
-                </CTableBody>
-            </CTable>
-            <Pagination totalPost={vehicle.length} postPerPage={postPerPage} setCurrentPage={setCurrentPage} />
+                        </CTableHead>
+                        <CTableBody>
+                            {currentPost.length > 0 ? (
+                                currentPost.map((item, index) => (
+                                    <CTableRow key={index}>
+                                        <CTableDataCell>{item.name}</CTableDataCell>
+                                        <CTableDataCell>{item.price}</CTableDataCell>
+                                        <CTableDataCell>{item.variant_id.name}</CTableDataCell>
+                                        <CTableDataCell>{item.status}</CTableDataCell>
+                                        <CTableDataCell>
+                                            <CButton className='update' size="sm" onClick={() => navigate(`/update_vehicle`, { state: { id: item._id } })}>
+                                                Edit
+                                            </CButton>
+                                            <CButton className='delete mx-2' size="sm" onClick={() => handleShow(item)}>
+                                                Delete
+                                            </CButton>
+                                        </CTableDataCell>
+                                    </CTableRow>
+                                ))
+                            ) : (
+                                <CTableRow>
+                                    <CTableDataCell colSpan="5" className="text-center">
+                                        No Categories Found
+                                    </CTableDataCell>
+                                </CTableRow>
+                            )}
+                        </CTableBody>
+                    </CTable>
+                    < Pagination totalPost={vehicle.length} postPerPage={postPerPage} setCurrentPage={setCurrentPage} />
+                </div>
+            )}
+
+
             <CModal visible={show} onClose={handleClose} centered className="custom-modal">
                 <CModalHeader closeButton>
                     <CModalBody>

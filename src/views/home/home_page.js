@@ -16,7 +16,8 @@ import {
     CCardBody,
     CCardTitle,
     CFormInput,
-    CButton
+    CButton,
+    CSpinner
 } from '@coreui/react';
 import React, { useState, useRef, useEffect } from 'react'
 import { NavLink, Link } from 'react-router-dom'
@@ -36,10 +37,12 @@ import axios from 'axios';
 import BASE_URL from '../../config/config';
 import BrandCard from '../car_card/brand_card';
 import Sidebar from '../../components/sidebar';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 
 const HomePage = () => {
     const [categories, setCategory] = useState([])
+    const [loading, setLoading] = useState(true);  // Loader state
     const headerRef = useRef()
     const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
     const navigate = useNavigate();
@@ -55,6 +58,7 @@ const HomePage = () => {
     }, [])
     useEffect(() => {
         const token = window.localStorage.getItem('token');
+        setLoading(true);
         axios.get(`${BASE_URL}/api/categories`, {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -64,8 +68,10 @@ const HomePage = () => {
                 // Filter brands on the frontend to exclude 'inactive' and 'draft' statuses
                 const filteredCategory = result.data.filter(category => category.status === 'Active');
                 setCategory(filteredCategory);
+                setLoading(false);
             })
             .catch(err => console.log(err));
+        setLoading(false);
     }, []);
 
 
@@ -171,74 +177,82 @@ const HomePage = () => {
                 </CHeader>
                 <div className='inner-content'>
                 </div>
-
             </div>
-            <h1 className='paragraph'>We are India's #1 Auto Portal Website for Cars.</h1>
-            <h2 className='paragraph' style={{ marginTop: '50px' }}>Thank You For Visit.</h2>
-            <CarCard />
-
-            <div className='image bg-white'>
-                <img src='https://www.hyundai.com/content/dam/hyundai/in/en/data/find-a-car/Creta/Interior/pc/Hyundai-creta-suv-interior-big-top-1600x580-1.jpg' width={'100%'}></img>
-            </div>
-
-            <CRow className="m-4 cars bg-white p-2  rounded">
-                <div className='d-flex justify-content-between align-items-center'>
-                    <h4 className='m-3'>Categories</h4>
-                    <h6 className="show-more mb-0" onClick={() => navigate('/category_page')}>Show more</h6>
+            {/* Loader */}
+            {loading ? (
+                <div className="d-flex justify-content-center align-items-center" style={{ height: '300px' }}>
+                    <CSpinner color="primary" size="lg" />
                 </div>
+            ) : (
+                <>
+                    <h1 className='paragraph'>We are India's #1 Auto Portal Website for Cars.</h1>
+                    <h2 className='paragraph' style={{ marginTop: '50px' }}>Thank You For Visit.</h2>
+                    <CarCard />
 
-                {categories.length > 0 ? (
-                    categories.slice(0, 4).map((item, index) => (
-                        <CCol xs="12" sm="6" md="4" lg="3" key={index} className="mb-4" style={{ cursor: 'pointer' }}>
-                            <CCard className="p-0 m-2 category-card">
-                                {item.image ? (
-                                    <img
-                                        src={item.image}
-                                        alt={item.name}
-                                        style={{
-                                            objectFit: 'cover',
-                                            backgroundColor: 'black',
-                                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-                                        }}
-                                    />
-                                ) : 'No image'}
-                                <CCardBody className='mt-0 card-body1' onClick={() => {
-                                    console.log(item._id);  // Log the _id to the console
-                                    navigate(`/category_page`, { state: { id: item._id, name: item.name } });
-                                }}>
-                                    <CCardTitle className='text-center'>{item.name}</CCardTitle>
+                    <div className='image bg-white'>
+                        <img src='https://www.hyundai.com/content/dam/hyundai/in/en/data/find-a-car/Creta/Interior/pc/Hyundai-creta-suv-interior-big-top-1600x580-1.jpg' width={'100%'}></img>
+                    </div>
 
-                                </CCardBody>
-                            </CCard>
-                        </CCol>
-                    ))
-                ) : (
-                    <CCol>
-                        <p>No Cars Found</p>
-                    </CCol>
-                )}
-            </CRow>
+                    <CRow className="m-4 cars bg-white p-2  rounded">
+                        <div className='d-flex justify-content-between align-items-center'>
+                            <h4 className='m-3'>Categories</h4>
+                            <h6 className="show-more mb-0" onClick={() => navigate('/category_page')}>Show more</h6>
+                        </div>
 
-            <div className='image bg-white'>
-                <img src='https://stimg.cardekho.com/images/carexteriorimages/930x620/Mahindra/Thar-ROXX/8438/1723692413550/rear-right-side-48.jpg' width={'100%'}></img>
-            </div>
+                        {categories.length > 0 ? (
+                            categories.slice(0, 4).map((item, index) => (
+                                <CCol xs="12" sm="6" md="4" lg="3" key={index} className="mb-4" style={{ cursor: 'pointer' }}>
+                                    <CCard className="p-0 m-2 category-card">
+                                        {item.image ? (
+                                            <img
+                                                src={item.image}
+                                                alt={item.name}
+                                                style={{
+                                                    objectFit: 'cover',
+                                                    backgroundColor: 'black',
+                                                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                                                }}
+                                            />
+                                        ) : 'No image'}
+                                        <CCardBody className='mt-0 card-body1' onClick={() => {
+                                            console.log(item._id);  // Log the _id to the console
+                                            navigate(`/category_page`, { state: { id: item._id, name: item.name } });
+                                        }}>
+                                            <CCardTitle className='text-center'>{item.name}</CCardTitle>
 
-            <div class="center-content">
-                <h1>Find The Best Car for You</h1>
-                <span>We are here to give you perfect reviews and price and range for your cars.</span>
-                <div class="form-container">
-                    <CFormInput type="email" name="" value="" placeholder="example@gmail.com" class="input-field"></CFormInput>
-                    <CButton type="submit" class="subBtn">Subscribe Us</CButton>
-                </div>
-            </div>
+                                        </CCardBody>
+                                    </CCard>
+                                </CCol>
+                            ))
+                        ) : (
+                            <CCol>
+                                <p>No Cars Found</p>
+                            </CCol>
+                        )}
+                    </CRow>
 
+                    <div className='image bg-white'>
+                        <img src='https://stimg.cardekho.com/images/carexteriorimages/930x620/Mahindra/Thar-ROXX/8438/1723692413550/rear-right-side-48.jpg' width={'100%'}></img>
+                    </div>
+
+
+                    <div class="center-content">
+                        <h1>Find The Best Car for You</h1>
+                        <span>We are here to give you perfect reviews and price and range for your cars.</span>
+                        <div class="form-container">
+                            <CFormInput type="email" name="" value="" placeholder="example@gmail.com" class="input-field"></CFormInput>
+                            <CButton type="submit" class="subBtn">Subscribe Us</CButton>
+                        </div>
+                    </div>
+                </>
+            )}
             <footer className="footer">
-                <div className="bg-[#1d1c1c] py-4 py-md-5 py-xl-8  text-white">
+                <div className="bg-[#1d1c1c] py-4 py-md-5 py-xl-8 text-white">
                     <div className="container">
                         <div className="row">
                             <div className="col-md-4">
-                                <h5>About Foodhub</h5>
-                                <p>Foodhub is your go-to platform for discovering new recipes, cooking tips, and culinary inspiration. Whether you're a seasoned chef or just starting, we've got something delicious for you.</p>
+                                <h5>About AutoMotive</h5>
+                                <p>AutoMotive is your ultimate destination for automotive enthusiasts. From the latest car reviews and news to expert tips on maintenance, we’ve got everything you need to stay in the fast lane.</p>
                             </div>
                             <div className="col-md-4">
                                 <h5>Quick Links</h5>
@@ -251,7 +265,7 @@ const HomePage = () => {
                             </div>
                             <div className="col-md-4">
                                 <h5>Subscribe to Our Newsletter</h5>
-                                <p>Get the latest recipes and culinary tips straight to your inbox. Sign up today!</p>
+                                <p>Get the latest automotive news, reviews, and expert tips delivered straight to your inbox. Sign up today!</p>
                                 <form>
                                     <input type="email" placeholder="Enter your email" className="form-control mb-2" />
                                     <button type="submit" className="btn btn-primary">Subscribe</button>
@@ -262,10 +276,11 @@ const HomePage = () => {
                 </div>
                 <div className="bg-dark py-2">
                     <div className="container text-center">
-                        <p className="mb-0 text-white">&copy; 2024 Foodhub. All Rights Reserved.</p>
+                        <p className="mb-0 text-white">&copy; 2024 AutoMotive. All Rights Reserved.</p>
                     </div>
                 </div>
             </footer>
+
         </div >
     )
 }

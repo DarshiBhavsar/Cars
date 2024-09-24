@@ -17,6 +17,7 @@ import {
     CHeader,
     CHeaderNav,
     useColorModes,
+    CSpinner,
 } from '@coreui/react';
 import axios from 'axios';
 import { useLocation, NavLink, Link, useNavigate } from 'react-router-dom';
@@ -44,6 +45,7 @@ const CarSinglePage = () => {
     const headerRef = useRef();
     const [cars, setCars] = useState({});
     const [variants, setVariants] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [currentImage, setCurrentImage] = useState('');
     const [error, setError] = useState(null);
     const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme');
@@ -89,6 +91,7 @@ const CarSinglePage = () => {
     useEffect(() => {
         if (id) {
             window.scrollTo(0, 0);
+            setIsLoading(true);
             axios.get(`${BASE_URL}/api/cars/details/${id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -103,11 +106,13 @@ const CarSinglePage = () => {
                     setVariants(variants);
                     setCurrentImage(car.image[0]);
                     setError(null); // Clear errors if successful
+                    setIsLoading(false)
                 })
                 .catch(error => {
                     setError('Error fetching car details');
                     setCars({});
                     setVariants([]);
+                    setIsLoading(false)
                 });
         }
     }, [id, token]);
@@ -212,105 +217,113 @@ const CarSinglePage = () => {
             </div>
 
             <CContainer fluid>
-                {/* Car Images Section */}
+                {isLoading && ( // Show spinner while loading
+                    <div className="d-flex justify-content-center align-items-center vh-100">
+                        <CSpinner color="primary" size="xl" />
+                    </div>
+                )}
 
-                <CRow className="mb-4">
-                    <CCol xs="12" sm="12" md="6" lg='12'>
-                        <CCard className="p-4">
-                            <CCardBody>
-                                <CCardText><strong>Name: </strong>{cars.name || 'Not Available'}</CCardText>
-                                {/* <CCardText><strong>Brand: </strong>{cars.brand_id?.name || 'Not Available'}</CCardText> */}
-                                <CCardText><strong>Description: </strong>{cars.description || 'Not Available'}</CCardText>
-                            </CCardBody>
-                        </CCard>
-                    </CCol>
-                </CRow>
+                {!isLoading && (
+                    <>
+                        <CRow className="mb-4">
+                            <CCol xs="12" sm="12" md="6" lg='12'>
+                                <CCard className="p-4">
+                                    <CCardBody>
+                                        <CCardText><strong>Name: </strong>{cars.name || 'Not Available'}</CCardText>
+                                        {/* <CCardText><strong>Brand: </strong>{cars.brand_id?.name || 'Not Available'}</CCardText> */}
+                                        <CCardText><strong>Description: </strong>{cars.description || 'Not Available'}</CCardText>
+                                    </CCardBody>
+                                </CCard>
+                            </CCol>
+                        </CRow>
 
-                <CRow className="my-3">
-                    <CCol xs="12" md="8">
-                        <CCard>
-                            <div className="main-image-container">
-                                <div {...settings} className="main-image-slider">
-                                    <img src={currentImage} alt="Main Car" className="main-image" />
-                                </div>
-                            </div>
-                        </CCard>
-                    </CCol>
-                    <CCol xs="12" md="4">
-                        <CCard className="p-4">
-                            <div className="thumbnail-container">
-                                {cars.image && Array.isArray(cars.image) && cars.image.length > 0 ? (
-                                    cars.image.map((img, index) => (
-                                        <div
-                                            key={index}
-                                            className="thumbnail-item"
-                                            onClick={() => handleThumbnailClick(img)}
-                                        >
-                                            <img
-                                                src={img}
-                                                alt={`Thumbnail ${index}`}
-                                                className="thumbnail-image"
-                                            />
+                        <CRow className="my-3">
+                            <CCol xs="12" md="8">
+                                <CCard>
+                                    <div className="main-image-container">
+                                        <div {...settings} className="main-image-slider">
+                                            <img src={currentImage} alt="Main Car" className="main-image" />
                                         </div>
-                                    ))
-                                ) : (
-                                    <p>No images available</p>
-                                )}
-                            </div>
-                        </CCard>
-                    </CCol>
-                </CRow>
+                                    </div>
+                                </CCard>
+                            </CCol>
+                            <CCol xs="12" md="4">
+                                <CCard className="p-4">
+                                    <div className="thumbnail-container">
+                                        {cars.image && Array.isArray(cars.image) && cars.image.length > 0 ? (
+                                            cars.image.map((img, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="thumbnail-item"
+                                                    onClick={() => handleThumbnailClick(img)}
+                                                >
+                                                    <img
+                                                        src={img}
+                                                        alt={`Thumbnail ${index}`}
+                                                        className="thumbnail-image"
+                                                    />
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p>No images available</p>
+                                        )}
+                                    </div>
+                                </CCard>
+                            </CCol>
+                        </CRow>
 
 
-                {/* Car Overview Section */}
+                        {/* Car Overview Section */}
 
 
-                {/* Variants Section */}
-                <CRow className="mb-4">
-                    <CCol xs="12">
-                        <CCard className="p-4">
-                            <CCardBody>
-                                <h3 className="text-center">Available Variants</h3>
-                                {variants.length > 0 ? (
-                                    <CTable hover responsive className="mt-4" bordered>
-                                        <CTableHead>
-                                            <CTableRow>
-                                                <CTableHeaderCell>Variant Name</CTableHeaderCell>
-                                                <CTableHeaderCell>Year</CTableHeaderCell>
-                                                <CTableHeaderCell>Description</CTableHeaderCell>
-                                                <CTableHeaderCell>Fuel Type</CTableHeaderCell>
-                                                <CTableHeaderCell>Available Colors</CTableHeaderCell>
-                                                <CTableHeaderCell>Transmission</CTableHeaderCell>
-                                                <CTableHeaderCell>Price</CTableHeaderCell>
+                        {/* Variants Section */}
+                        <CRow className="mb-4">
+                            <CCol xs="12">
+                                <CCard className="p-4">
+                                    <CCardBody>
+                                        <h3 className="text-center">Available Variants</h3>
+                                        {variants.length > 0 ? (
+                                            <CTable hover responsive className="mt-4" bordered>
+                                                <CTableHead>
+                                                    <CTableRow>
+                                                        <CTableHeaderCell>Variant Name</CTableHeaderCell>
+                                                        <CTableHeaderCell>Year</CTableHeaderCell>
+                                                        <CTableHeaderCell>Description</CTableHeaderCell>
+                                                        <CTableHeaderCell>Fuel Type</CTableHeaderCell>
+                                                        <CTableHeaderCell>Available Colors</CTableHeaderCell>
+                                                        <CTableHeaderCell>Transmission</CTableHeaderCell>
+                                                        <CTableHeaderCell>Price</CTableHeaderCell>
 
-                                            </CTableRow>
-                                        </CTableHead>
+                                                    </CTableRow>
+                                                </CTableHead>
 
-                                        <CTableBody>
-                                            {variants.map((variant, index) => (
-                                                <CTableRow key={index}>
-                                                    <CTableDataCell>{variant.variant.name || 'Not Available'}</CTableDataCell>
-                                                    <CTableDataCell>{variant.vehicleModel?.name || 'Not Available'}</CTableDataCell>
-                                                    <CTableDataCell>{variant.variant.description || 'Not Available'}</CTableDataCell>
-                                                    <CTableDataCell>{variant.fuelType || 'N/A'}</CTableDataCell>
-                                                    <CTableDataCell>{variant.colorOptions?.join(', ') || 'N/A'}</CTableDataCell>
-                                                    <CTableDataCell>{variant.transmissionOptions?.join(', ') || 'N/A'}</CTableDataCell>
-                                                    <CTableDataCell>
-                                                        {variant.vehicleModel?.price ? <><span>₹</span>{variant.vehicleModel.price}</> : 'Not Available'}
-                                                    </CTableDataCell>
+                                                <CTableBody>
+                                                    {variants.map((variant, index) => (
+                                                        <CTableRow key={index}>
+                                                            <CTableDataCell>{variant.variant.name || 'Not Available'}</CTableDataCell>
+                                                            <CTableDataCell>{variant.vehicleModel?.name || 'Not Available'}</CTableDataCell>
+                                                            <CTableDataCell>{variant.variant.description || 'Not Available'}</CTableDataCell>
+                                                            <CTableDataCell>{variant.fuelType || 'N/A'}</CTableDataCell>
+                                                            <CTableDataCell>{variant.colorOptions?.join(', ') || 'N/A'}</CTableDataCell>
+                                                            <CTableDataCell>{variant.transmissionOptions?.join(', ') || 'N/A'}</CTableDataCell>
+                                                            <CTableDataCell>
+                                                                {variant.vehicleModel?.price ? <><span>₹</span>{variant.vehicleModel.price}</> : 'Not Available'}
+                                                            </CTableDataCell>
 
 
-                                                </CTableRow>
-                                            ))}
-                                        </CTableBody>
-                                    </CTable>
-                                ) : (
-                                    <p>No variants available</p>
-                                )}
-                            </CCardBody>
-                        </CCard>
-                    </CCol>
-                </CRow>
+                                                        </CTableRow>
+                                                    ))}
+                                                </CTableBody>
+                                            </CTable>
+                                        ) : (
+                                            <p>No variants available</p>
+                                        )}
+                                    </CCardBody>
+                                </CCard>
+                            </CCol>
+                        </CRow>
+                    </>
+                )}
             </CContainer>
 
             <footer className="footer">
@@ -318,13 +331,13 @@ const CarSinglePage = () => {
                     <div className="container">
                         <div className="row">
                             <div className="col-md-4">
-                                <h5>About Foodhub</h5>
-                                <p>Foodhub is your go-to platform for discovering new recipes, cooking tips, and culinary inspiration. Whether you're a seasoned chef or just starting, we've got something delicious for you.</p>
+                                <h5>About AutoMotive</h5>
+                                <p>AutoMotive is your ultimate destination for automotive enthusiasts. From the latest car reviews and news to expert tips on maintenance, we’ve got everything you need to stay in the fast lane.</p>
                             </div>
                             <div className="col-md-4">
                                 <h5>Quick Links</h5>
                                 <ul className="list-unstyled">
-                                    <li><Link to="home_page" className="text-white">Home</Link></li>
+                                    <li><Link to="/home_page" className="text-white">Home</Link></li>
                                     <li><Link to="/category_page" className="text-white">Categories</Link></li>
                                     <li><Link to="/brand_page" className="text-white">Brands</Link></li>
                                     <li><a href="#contact" className="text-white">Contact Us</a></li>
@@ -332,7 +345,7 @@ const CarSinglePage = () => {
                             </div>
                             <div className="col-md-4">
                                 <h5>Subscribe to Our Newsletter</h5>
-                                <p>Get the latest recipes and culinary tips straight to your inbox. Sign up today!</p>
+                                <p>Get the latest automotive news, reviews, and expert tips delivered straight to your inbox. Sign up today!</p>
                                 <form>
                                     <input type="email" placeholder="Enter your email" className="form-control mb-2" />
                                     <button type="submit" className="btn btn-primary">Subscribe</button>
@@ -343,7 +356,7 @@ const CarSinglePage = () => {
                 </div>
                 <div className="bg-dark py-2">
                     <div className="container text-center">
-                        <p className="mb-0 text-white">&copy; 2024 Foodhub. All Rights Reserved.</p>
+                        <p className="mb-0 text-white">&copy; 2024 AutoMotive. All Rights Reserved.</p>
                     </div>
                 </div>
             </footer>

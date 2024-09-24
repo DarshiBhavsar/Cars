@@ -12,6 +12,7 @@ import {
     CModalBody,
     CModalHeader,
     CModalFooter,
+    CSpinner,
 } from '@coreui/react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -24,6 +25,7 @@ const BrandPage = () => {
     const navigate = useNavigate();
     const token = useSelector((state) => state.user.token);
     const [brand, setBrand] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [show, setShow] = useState(false);  // Modal state
     const [selectedUser, setSelectedUser] = useState(null);  // Selected brand
 
@@ -53,13 +55,14 @@ const BrandPage = () => {
     // Fetch brands on component mount
     useEffect(() => {
         const token = window.localStorage.getItem('token');
+        setIsLoading(true);
         if (token) { // Ensure the token is available
             axios.get(`${BASE_URL}/api/brands`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
             })
-                .then(result => setBrand(result.data))
+                .then(result => { setBrand(result.data); setIsLoading(false); })
                 .catch(err => console.log(err));
         } else {
             console.log('No token found');
@@ -100,68 +103,77 @@ const BrandPage = () => {
             >
                 Add Brand
             </CButton>
+            {isLoading ? ( // Show spinner if isLoading is true
+                <div className="text-center mt-4">
+                    <CSpinner color="primary" />
+                </div>
+            ) :
+                (
+                    <div>
+                        <CTable hover responsive className="mt-4" bordered>
+                            <colgroup>
+                                <col style={{ width: '20%' }} /> {/* Image Column */}
+                                <col style={{ width: '20%' }} /> {/* Name Column */}
+                                <col style={{ width: '20%' }} /> {/* Description Column */}
+                                <col style={{ width: '20%' }} /> {/* Status Column */}
+                                <col style={{ width: '20%' }} /> {/* Actions Column */}
+                            </colgroup>
+                            <CTableHead color="white">
+                                <CTableRow>
+                                    <CTableHeaderCell scope="col">Image</CTableHeaderCell>
+                                    <CTableHeaderCell scope="col">Name</CTableHeaderCell>
+                                    <CTableHeaderCell scope="col">Description</CTableHeaderCell>
+                                    <CTableHeaderCell scope="col">Status</CTableHeaderCell>
+                                    <CTableHeaderCell scope="col">Actions</CTableHeaderCell>
+                                </CTableRow>
+                            </CTableHead>
+                            <CTableBody>
+                                {currentPost.length > 0 ? (
+                                    currentPost.map((item, index) => (
+                                        <CTableRow key={index}>
+                                            <CTableDataCell>
+                                                {item.image ? (
+                                                    <img
+                                                        src={item.image}
+                                                        alt={item.name}
+                                                        style={{
+                                                            width: '50px',
+                                                            height: '50px',
+                                                            objectFit: 'cover',
+                                                            borderRadius: '50%',
+                                                            // backgroundColor: 'black',
+                                                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                                                        }}
+                                                    />
+                                                ) : 'No image'}
+                                            </CTableDataCell>
+                                            <CTableDataCell>{item.name}</CTableDataCell>
+                                            <CTableDataCell>{item.description}</CTableDataCell>
+                                            <CTableDataCell>{item.status}</CTableDataCell>
+                                            <CTableDataCell>
+                                                <CButton className='update' size="sm" onClick={() => navigate(`/update_brand`, { state: { id: item._id } })}>
+                                                    Edit
+                                                </CButton>
+                                                <CButton size="sm" className="delete mx-2" onClick={() => handleShow(item)}>
+                                                    Delete
+                                                </CButton>
+                                            </CTableDataCell>
+                                        </CTableRow>
+                                    ))
+                                ) : (
+                                    <CTableRow>
+                                        <CTableDataCell colSpan="5" className="text-center">
+                                            No Brands Found
+                                        </CTableDataCell>
+                                    </CTableRow>
+                                )}
+                            </CTableBody>
+                        </CTable>
+                        <Pagination totalPost={brand.length} postPerPage={postPerPage} setCurrentPage={setCurrentPage} />
+                    </div>
+                )}
 
-            {/* Brands Table */}
-            <CTable hover responsive className="mt-4" bordered>
-                <colgroup>
-                    <col style={{ width: '20%' }} /> {/* Image Column */}
-                    <col style={{ width: '20%' }} /> {/* Name Column */}
-                    <col style={{ width: '20%' }} /> {/* Description Column */}
-                    <col style={{ width: '20%' }} /> {/* Status Column */}
-                    <col style={{ width: '20%' }} /> {/* Actions Column */}
-                </colgroup>
-                <CTableHead color="white">
-                    <CTableRow>
-                        <CTableHeaderCell scope="col">Image</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Name</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Description</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Status</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Actions</CTableHeaderCell>
-                    </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                    {currentPost.length > 0 ? (
-                        currentPost.map((item, index) => (
-                            <CTableRow key={index}>
-                                <CTableDataCell>
-                                    {item.image ? (
-                                        <img
-                                            src={item.image}
-                                            alt={item.name}
-                                            style={{
-                                                width: '50px',
-                                                height: '50px',
-                                                objectFit: 'cover',
-                                                borderRadius: '50%',
-                                                // backgroundColor: 'black',
-                                                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-                                            }}
-                                        />
-                                    ) : 'No image'}
-                                </CTableDataCell>
-                                <CTableDataCell>{item.name}</CTableDataCell>
-                                <CTableDataCell>{item.description}</CTableDataCell>
-                                <CTableDataCell>{item.status}</CTableDataCell>
-                                <CTableDataCell>
-                                    <CButton className='update' size="sm" onClick={() => navigate(`/update_brand`, { state: { id: item._id } })}>
-                                        Edit
-                                    </CButton>
-                                    <CButton size="sm" className="delete mx-2" onClick={() => handleShow(item)}>
-                                        Delete
-                                    </CButton>
-                                </CTableDataCell>
-                            </CTableRow>
-                        ))
-                    ) : (
-                        <CTableRow>
-                            <CTableDataCell colSpan="5" className="text-center">
-                                No Brands Found
-                            </CTableDataCell>
-                        </CTableRow>
-                    )}
-                </CTableBody>
-            </CTable>
-            <Pagination totalPost={brand.length} postPerPage={postPerPage} setCurrentPage={setCurrentPage} />
+
 
             {/* Delete Confirmation Modal */}
             <CModal visible={show} onClose={handleClose} centered className="custom-modal">

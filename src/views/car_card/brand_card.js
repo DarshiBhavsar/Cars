@@ -1,16 +1,15 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import BASE_URL from '../../config/config';
-import { useSelector } from 'react-redux';
-import { CCard, CCol, CRow, CButton } from '@coreui/react';
+import { CCard, CCol, CRow, CSpinner } from '@coreui/react';
 import '../car_card/brand_card.css';
 import { useNavigate } from 'react-router-dom';
 
 const BrandCard = () => {
     const navigate = useNavigate();
     const [brand, setBrand] = useState([]);
+    const [loading, setLoading] = useState(true); // State for the loader
 
-    // Fetch brands from the API
     useEffect(() => {
         const token = window.localStorage.getItem('token');
         axios.get(`${BASE_URL}/api/brands`, {
@@ -19,28 +18,34 @@ const BrandCard = () => {
             },
         })
             .then(result => {
-                // Filter brands on the frontend to exclude 'inactive' and 'draft' statuses
                 const filteredBrands = result.data.filter(brand => brand.status === 'Active');
                 setBrand(filteredBrands);
+                setLoading(false); // Set loading to false once data is fetched
             })
-            .catch(err => console.log(err));
-    }
-        , []);
+            .catch(err => {
+                console.log(err);
+                setLoading(false); // Set loading to false in case of an error
+            });
+    }, []);
 
     return (
         <div className="brandcontent">
             <CRow className="m-0">
                 <div className='d-flex justify-content-between align-items-center'>
                     <h4 className='m-3'>Brands</h4>
-                    <h6 className="show-more mb-0" onClick={() => navigate('/category_page')}>Show more</h6>
                 </div>
 
-                {brand.length > 0 ? (
+                {/* Loader Section */}
+                {loading ? (
+                    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
+                        <CSpinner color="primary" />
+                    </div>
+                ) : brand.length > 0 ? (
                     brand.map((item, index) => (
                         <CCol xs="12" sm="4" md="4" lg="2" key={index} className="mb-4" style={{ cursor: 'pointer' }}>
                             <CCard className="p-3 m-0 brand_cards" onClick={() => {
                                 console.log(item._id);  // Log the _id to the console
-                                navigate(`/brand_page`, { state: { id: item._id, name: item.name, } });
+                                navigate(`/brand_page`, { state: { id: item._id, name: item.name } });
                             }}>
                                 {item.image ? (
                                     <img

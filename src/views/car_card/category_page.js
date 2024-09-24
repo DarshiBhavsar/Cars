@@ -10,6 +10,7 @@ import {
     CHeader,
     CHeaderNav,
     useColorModes,
+    CSpinner,
 } from '@coreui/react';
 import axios from 'axios';
 import React, { useState, useEffect, useRef } from 'react';
@@ -39,6 +40,7 @@ const CategoryPage = () => {
     const [categories, setCategory] = useState([]);
     const [cars, setCars] = useState([]);
     const [error, setError] = useState(null);
+    const [isLoading, setLoading] = useState(true);
     const location = useLocation();
     const { id, name } = location.state || {}; // Get the category ID from the route state
     const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme');
@@ -55,6 +57,7 @@ const CategoryPage = () => {
     }, [])
     useEffect(() => {
         const token = window.localStorage.getItem('token');
+        setLoading(true);
         if (isCategoryView) {
             // Fetch categories data if no ID is present
             axios.get(`${BASE_URL}/api/categories`, {
@@ -66,6 +69,7 @@ const CategoryPage = () => {
                     // Filter brands on the frontend to exclude 'inactive' and 'draft' statuses
                     const filteredCategory = result.data.filter(category => category.status === 'Active');
                     setCategory(filteredCategory);
+                    setLoading(false);
                 })
                 .catch(err => console.log(err));
 
@@ -75,10 +79,12 @@ const CategoryPage = () => {
                 .then(response => {
                     setCars(response.data);
                     setError(null); // Clear errors if successful
+                    setLoading(false);
                 })
                 .catch(error => {
                     setError('Error fetching cars for this category');
                     setCars([]); // Ensure cars is set to an empty array on error
+                    setLoading(false);
                 });
         }
     }, [id, isCategoryView]);
@@ -217,100 +223,106 @@ const CategoryPage = () => {
                 <h1 className='paragraph1'>Category Page</h1>
                 <h2 className='paragraph1' style={{ marginTop: '50px' }}>{name}</h2>
             </div>
-
-            {isCategoryView ? (
-                <CRow className="m-4 cars">
-                    {categories.length > 0 ? (
-                        categories.map((item, index) => (
-                            <CCol xs="12" sm="6" md="4" lg="3" key={index} className="mb-4" style={{ cursor: 'pointer' }}>
-                                <CCard className="p-0 m-2 car-card" >
-                                    {item.image ? (
-                                        <img
-                                            src={item.image}
-                                            alt={item.name}
-                                            style={{
-                                                objectFit: 'cover',
-                                                backgroundColor: 'black',
-                                                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-                                            }}
-                                        />
-                                    ) : 'No image'}
-                                    <CCardBody className='mt-0 card-body1' onClick={() => {
-                                        navigate(`/category_page`, { state: { id: item._id } });
-                                    }}>
-                                        <CCardTitle className='text-center'>{item.name}</CCardTitle>
-                                        <CCardText>{item.description}</CCardText>
-                                    </CCardBody>
-                                </CCard>
-                            </CCol>
-                        ))
-                    ) : (
-                        <CCol>
-                            <p>No Categories Found</p>
-                        </CCol>
-                    )}
-                </CRow>
+            {isLoading ? ( // Display spinner while loading
+                <div className="d-flex justify-content-center align-items-center mt-5" style={{ minHeight: '100px' }}>
+                    <CSpinner color="primary" />
+                </div>
             ) : (
-                <CRow className=" m-4 cars">
-                    {cars.length > 0 ? (
-                        cars.map((item, index) => (
-                            <CCol xs="12" sm="6" md="4" lg="3" key={index} className="mb-4">
-                                <CCard className="p-0 m-2 car-card">
-                                    <div style={{ display: item.image && item.image.length > 0 ? 'block' : 'none' }}>
-                                        <Slider {...settings} style={{ height: '230px', borderRadius: '0px' }}>
-                                            {item.image.map((img, index) => (
-                                                <img
-                                                    key={index}
-                                                    src={img}
-                                                    alt={`Image ${index}`}
-                                                    className='car-image1'
-                                                />
-                                            ))}
-                                        </Slider>
-                                    </div>
-                                    <CCardBody className='mt-0 card-body1'>
-                                        <CCardTitle className='text-center'>{item.name}</CCardTitle>
-                                        <CCardText className='text-center mt-2'>
-                                            <strong>Description:</strong>
-                                            {item.description}
-                                        </CCardText>
-
-                                        <CCardText className='text-center'>
-                                            <strong>Brand: </strong>{item.brand_id.name}
-                                        </CCardText>
-                                        <div className='d-flex justify-content-center align-items-center'>
-                                            <CButton className="custom-button mt-3" variant='ghost' onClick={() => {
-                                                console.log(item._id);  // Log the _id to the console
-                                                navigate(`/single_page`, { state: { id: item._id } });
-                                            }}>
-                                                Check Out More
-                                                <span className='icon'><CIcon size='lg' icon={cilArrowCircleRight} /></span>
-                                            </CButton>
-                                        </div>
-
-                                    </CCardBody>
-                                </CCard>
+                isCategoryView ? (
+                    <CRow className="m-4 cars">
+                        {categories.length > 0 ? (
+                            categories.map((item, index) => (
+                                <CCol xs="12" sm="6" md="4" lg="3" key={index} className="mb-4" style={{ cursor: 'pointer' }}>
+                                    <CCard className="p-0 m-2 car-card" >
+                                        {item.image ? (
+                                            <img
+                                                src={item.image}
+                                                alt={item.name}
+                                                style={{
+                                                    objectFit: 'cover',
+                                                    backgroundColor: 'black',
+                                                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                                                }}
+                                            />
+                                        ) : 'No image'}
+                                        <CCardBody className='mt-0 card-body1' onClick={() => {
+                                            navigate(`/category_page`, { state: { id: item._id } });
+                                        }}>
+                                            <CCardTitle className='text-center'>{item.name}</CCardTitle>
+                                            <CCardText>{item.description}</CCardText>
+                                        </CCardBody>
+                                    </CCard>
+                                </CCol>
+                            ))
+                        ) : (
+                            <CCol>
+                                <p>No Categories Found</p>
                             </CCol>
-                        ))
-                    ) : (
-                        <CCol>
-                            <p>{error || 'No cars available for this category'}</p>
-                        </CCol>
-                    )}
-                </CRow>
+                        )}
+                    </CRow>
+                ) : (
+                    <CRow className=" m-4 cars">
+                        {cars.length > 0 ? (
+                            cars.map((item, index) => (
+                                <CCol xs="12" sm="6" md="4" lg="3" key={index} className="mb-4">
+                                    <CCard className="p-0 m-2 car-card">
+                                        <div style={{ display: item.image && item.image.length > 0 ? 'block' : 'none' }}>
+                                            <Slider {...settings} style={{ height: '230px', borderRadius: '0px' }}>
+                                                {item.image.map((img, index) => (
+                                                    <img
+                                                        key={index}
+                                                        src={img}
+                                                        alt={`Image ${index}`}
+                                                        className='car-image1'
+                                                    />
+                                                ))}
+                                            </Slider>
+                                        </div>
+                                        <CCardBody className='mt-0 card-body1'>
+                                            <CCardTitle className='text-center'>{item.name}</CCardTitle>
+                                            <CCardText className='text-center mt-2'>
+                                                <strong>Description:</strong>
+                                                {item.description}
+                                            </CCardText>
+
+                                            <CCardText className='text-center'>
+                                                <strong>Brand: </strong>{item.brand_id.name}
+                                            </CCardText>
+                                            <div className='d-flex justify-content-center align-items-center'>
+                                                <CButton className="custom-button mt-3" variant='ghost' onClick={() => {
+                                                    console.log(item._id);  // Log the _id to the console
+                                                    navigate(`/single_page`, { state: { id: item._id } });
+                                                }}>
+                                                    Check Out More
+                                                    <span className='icon'><CIcon size='lg' icon={cilArrowCircleRight} /></span>
+                                                </CButton>
+                                            </div>
+
+                                        </CCardBody>
+                                    </CCard>
+                                </CCol>
+                            ))
+                        ) : (
+                            <CCol>
+                                <p>{error || 'No cars available for this category'}</p>
+                            </CCol>
+                        )}
+                    </CRow>
+                )
             )}
+
             <footer className="footer">
-                <div className="bg-[#1d1c1c] py-4 py-md-5 py-xl-8  text-white">
+                <div className="bg-[#1d1c1c] py-4 py-md-5 py-xl-8 text-white">
                     <div className="container">
                         <div className="row">
                             <div className="col-md-4">
-                                <h5>About Foodhub</h5>
-                                <p>Foodhub is your go-to platform for discovering new recipes, cooking tips, and culinary inspiration. Whether you're a seasoned chef or just starting, we've got something delicious for you.</p>
+                                <h5>About AutoMotive</h5>
+                                <p>AutoMotive is your ultimate destination for automotive enthusiasts. From the latest car reviews and news to expert tips on maintenance, we’ve got everything you need to stay in the fast lane.</p>
                             </div>
                             <div className="col-md-4">
                                 <h5>Quick Links</h5>
                                 <ul className="list-unstyled">
-                                    <li><Link to="home_page" className="text-white">Home</Link></li>
+                                    <li><Link to="/home_page" className="text-white">Home</Link></li>
                                     <li><Link to="/category_page" className="text-white">Categories</Link></li>
                                     <li><Link to="/brand_page" className="text-white">Brands</Link></li>
                                     <li><a href="#contact" className="text-white">Contact Us</a></li>
@@ -318,7 +330,7 @@ const CategoryPage = () => {
                             </div>
                             <div className="col-md-4">
                                 <h5>Subscribe to Our Newsletter</h5>
-                                <p>Get the latest recipes and culinary tips straight to your inbox. Sign up today!</p>
+                                <p>Get the latest automotive news, reviews, and expert tips delivered straight to your inbox. Sign up today!</p>
                                 <form>
                                     <input type="email" placeholder="Enter your email" className="form-control mb-2" />
                                     <button type="submit" className="btn btn-primary">Subscribe</button>
@@ -329,7 +341,7 @@ const CategoryPage = () => {
                 </div>
                 <div className="bg-dark py-2">
                     <div className="container text-center">
-                        <p className="mb-0 text-white">&copy; 2024 Foodhub. All Rights Reserved.</p>
+                        <p className="mb-0 text-white">&copy; 2024 AutoMotive. All Rights Reserved.</p>
                     </div>
                 </div>
             </footer>
